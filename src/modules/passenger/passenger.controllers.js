@@ -1,3 +1,4 @@
+const { catchAsync, AppError } = require("../../erros/index.js");
 const {
 	validatePassenger,
 	validatePartialPassenger,
@@ -6,104 +7,72 @@ const { PassengerService } = require("./passenger.services.js");
 
 const passengerService = new PassengerService();
 
-async function getPassengers(req, res) {
-	try {
-		const passengers = await passengerService.findAll();
-		return res.status(200).json(passengers);
-	} catch (error) {
-		return res.status(500).json(error);
+const getPassengers = catchAsync(async (req, res, next) => {
+	const passengers = await passengerService.findAll();
+	return res.status(200).json(passengers);
+});
+
+const getPassenger = catchAsync(async (req, res, next) => {
+	const { id } = req.params;
+	const passenger = await passengerService.findOne(id);
+
+	if (!passenger)
+		return next(new AppError(`Passenger not found with id ${id}`, 404));
+
+	return res.status(200).json(passenger);
+});
+
+const postPassenger = catchAsync(async (req, res, next) => {
+	const { data, errorMessages, hasError } = validatePassenger(req.body);
+
+	if (hasError) {
+		return res.status(422).json({
+			status: "error",
+			message: errorMessages,
+		});
 	}
-}
 
-async function getPassenger(req, res) {
-	try {
-		const { id } = req.params;
-		const passenger = await passengerService.findOne(id);
+	const passenger = await passengerService.create(data);
 
-		if (!passenger) {
-			return res.status(404).json({
-				status: "error",
-				message: `Passenger not found with id ${id}`,
-			});
-		}
+	return res.status(201).json(passenger);
+});
 
-		return res.status(200).json(passenger);
-	} catch (error) {
-		return res.status(500).json(error);
+const patchPassenger = catchAsync(async (req, res, next) => {
+	const { data, errorMessages, hasError } = validatePartialPassenger(
+		req.body
+	);
+
+	if (hasError) {
+		return res.status(422).json({
+			status: "error",
+			message: errorMessages,
+		});
 	}
-}
 
-async function postPassenger(req, res) {
-	try {
-		const { data, errorMessages, hasError } = validatePassenger(req.body);
+	const { id } = req.params;
 
-		if (hasError) {
-			return res.status(422).json({
-				status: "error",
-				message: errorMessages,
-			});
-		}
+	const passenger = await passengerService.findOne(id);
 
-		const passenger = await passengerService.create(data);
+	if (!passenger)
+		return next(new AppError(`Passenger not found with id ${id}`, 404));
 
-		return res.status(201).json(passenger);
-	} catch (error) {
-		return res.status(500).json(error);
-	}
-}
+	const updatePassenger = await passengerService.update(passenger, data);
 
-async function patchPassenger(req, res) {
-	try {
-		const { data, errorMessages, hasError } = validatePartialPassenger(
-			req.body
-		);
+	return res.status(200).json(updatePassenger);
+});
 
-		if (hasError) {
-			return res.status(422).json({
-				status: "error",
-				message: errorMessages,
-			});
-		}
+const deletePassenger = catchAsync(async (req, res, next) => {
+	const { id } = req.params;
 
-		const { id } = req.params;
+	const passenger = await passengerService.findOne(id);
 
-		const passenger = await passengerService.findOne(id);
+	if (!passenger)
+		return next(new AppError(`Passenger not found with id ${id}`, 404));
 
-		if (!passenger) {
-			return res.status(404).json({
-				status: "error",
-				message: `Passenger not found with id ${id}`,
-			});
-		}
+	await passengerService.delete(passenger);
 
-		const updatePassenger = await passengerService.update(passenger, data);
-
-		return res.status(200).json(updatePassenger);
-	} catch (error) {
-		return res.status(500).json(error);
-	}
-}
-
-async function deletePassenger(req, res) {
-	try {
-		const { id } = req.params;
-
-		const passenger = await passengerService.findOne(id);
-
-		if (!passenger) {
-			return res.status(404).json({
-				status: "error",
-				message: `Passenger not found with id ${id}`,
-			});
-		}
-
-		await passengerService.delete(passenger);
-
-		return res.status(204).json();
-	} catch (error) {
-		return res.status(500).json(error);
-	}
-}
+	return res.status(204).json();
+});
 
 module.exports = {
 	getPassengers,
