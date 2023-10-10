@@ -4,7 +4,7 @@ function enableCors(app, acceptedOrigins) {
 	app.use(
 		cors({
 			origin: (origin, callback) => {
-				if (acceptedOrigins.include(origin)) {
+				if (acceptedOrigins.includes(origin)) {
 					return callback(null, true);
 				}
 
