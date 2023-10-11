@@ -1,9 +1,9 @@
 const { Router } = require("express");
 const {
-	login,
-	register,
-	changePassword,
-	deleteAcount,
+    login,
+    register,
+    changePassword,
+    deleteAcount,
 } = require("./auth.controller");
 const { protect, restrictTo } = require("./auth.middleware");
 const router = Router();
@@ -14,5 +14,5 @@ router.patch("/change-password", protect, changePassword);
 router.delete("/:id", protect, deleteAcount);
 
 module.exports = {
-	authRouter: router,
+    authRouter: router,
 };
