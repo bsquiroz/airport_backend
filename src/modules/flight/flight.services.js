@@ -1,20 +1,31 @@
 const { Flights } = require("./flight.model.js");
+const { Op } = require("sequelize");
 
 class FlightServices {
     async findAll() {
         return await Flights.findAll({
             where: {
-                status: true,
+                status: {
+                    [Op.notIn]: ["cancelled", "done"],
+                },
             },
         });
     }
 
-    async findOne(id) {
+    async findOne(id, status) {
+        let whereClause = {
+            id,
+            status,
+        };
+
+        if (!status) {
+            whereClause.status = {
+                [Op.notIn]: ["cancelled"],
+            };
+        }
+
         return await Flights.findOne({
-            where: {
-                id,
-                status: true,
-            },
+            where: whereClause,
         });
     }
 
@@ -28,7 +39,7 @@ class FlightServices {
 
     async delete(flight) {
         return await flight.update({
-            status: false,
+            status: "cancelled",
         });
     }
 }

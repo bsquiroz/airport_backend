@@ -6,8 +6,9 @@ const flightShema = z.object({
     origin_id: z.number().positive(),
     destination_id: z.number().positive(),
     plane_id: z.number().positive(),
-    // departure_time: z.date(),
-    // check_in: z.date(),
+    departure_time: z.string(),
+    check_in: z.date().optional(),
+    status: z.enum(["pending", "inProgress", "done", "cancelled"]).optional(),
 });
 
 function validateFlight(body) {
