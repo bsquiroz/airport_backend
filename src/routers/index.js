@@ -8,6 +8,7 @@ const { cityRouter } = require("../modules/city/city.router.js");
 const { planeRouter } = require("../modules/plane/plane.router.js");
 const { flightRouter } = require("../modules/flight/flight.router.js");
 const { ticketRouter } = require("../modules/ticket/ticket.router.js");
+const { bookingRouter } = require("../modules/booking/booking.router.js");
 
 const routers = Router();
 
@@ -19,6 +20,7 @@ routers.use("/city", cityRouter);
 routers.use("/planes", planeRouter);
 routers.use("/flights", flightRouter);
 routers.use("/tickets", ticketRouter);
+routers.use("/bookings", bookingRouter);
 
 module.exports = {
     routers,
