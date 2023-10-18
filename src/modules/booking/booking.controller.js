@@ -1,8 +1,12 @@
 const { AppError, catchAsync } = require("../../erros");
+const { TicketServices } = require("../ticket/ticket.services");
 const { validateBooking, validatePartialBooking } = require("./booking.schema");
 const { BookingServices } = require("./booking.services");
+const { hasDuplateSeatNumber } = require("./utils/hasDuplicateSeatNumber");
+const { isRepeatSeat } = require("./utils/isRepeatSeat");
 
 const bookingServices = new BookingServices();
+const ticketServices = new TicketServices();
 
 const getBookings = catchAsync(async (req, res, next) => {
     const bookings = await bookingServices.findAll();
@@ -29,9 +33,32 @@ const postBooking = catchAsync(async (req, res, next) => {
         });
     }
 
-    const booking = await bookingServices.create(data);
+    if (isRepeatSeat(data.tickets))
+        return next(
+            new AppError("You cannot sell two tickets with the same seat", 400)
+        );
 
-    return res.status(201).json(booking);
+    const seatNumberFlightId = await ticketServices.findAllTicketByFlightId(
+        data.dataBooking.flight_id
+    );
+
+    if (hasDuplateSeatNumber(data.tickets, seatNumberFlightId))
+        return next(new AppError("One of the choosen seats is occuped", 400));
+
+    data.dataBooking["created_by"] = req.sessionUser.id;
+    const booking = await bookingServices.create(data.dataBooking);
+
+    data.tickets.forEach((ticket) => {
+        ticket["booking_id"] = booking.id;
+        ticket["created_by"] = req.sessionUser.id;
+    });
+
+    const tickets = await ticketServices.multipleCreate(data.tickets);
+
+    return res.status(201).json({
+        booking,
+        tickets,
+    });
 });
 
 const patchBooking = catchAsync(async (req, res, next) => {

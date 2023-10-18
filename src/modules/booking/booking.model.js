@@ -29,6 +29,10 @@ const Booking = sequelize.define("booking", {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
     status: {
         type: DataTypes.ENUM("pending", "confirmed", "cancelled"),
         allowNull: false,

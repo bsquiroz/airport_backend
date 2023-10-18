@@ -40,7 +40,7 @@ const Ticket = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        create_by: {
+        created_by: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
