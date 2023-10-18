@@ -18,6 +18,15 @@ class TicketServices {
         });
     }
 
+    async findOneTicketByFlightId(flight_id) {
+        return await Ticket.findOne({
+            where: {
+                flight_id,
+                status: true,
+            },
+        });
+    }
+
     async create(ticket) {
         return await Ticket.create(ticket);
     }

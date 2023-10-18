@@ -14,7 +14,7 @@ const routers = Router();
 
 routers.use("/users", authRouter);
 
-// routers.use(protect);
+routers.use(protect);
 routers.use("/passengers", passengerRouter);
 routers.use("/city", cityRouter);
 routers.use("/planes", planeRouter);

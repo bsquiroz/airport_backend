@@ -29,6 +29,7 @@ const postTicket = catchAsync(async (req, res, next) => {
         });
     }
 
+    data["create_by"] = req.sessionUser.id;
     const ticket = await ticketServices.create(data);
 
     return res.status(201).json(ticket);

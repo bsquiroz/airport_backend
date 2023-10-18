@@ -40,6 +40,10 @@ const Ticket = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        create_by: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         status: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

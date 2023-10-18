@@ -1,11 +1,13 @@
 const { envs } = require("../../config/enviroments");
 const { httpClient } = require("../../config/plugins");
 const { AppError, catchAsync } = require("../../erros");
-const { CityService } = require("../city/city.services");
 const { validateFlight, validatePartialFlight } = require("./flight.schema");
+const { CityService } = require("../city/city.services");
+const { TicketServices } = require("../ticket/ticket.services");
 const { FlightServices } = require("./flight.services");
 
 const flightServices = new FlightServices();
+const ticketServices = new TicketServices();
 const cityServices = new CityService();
 
 const getFlights = catchAsync(async (req, res, next) => {
@@ -53,7 +55,8 @@ const patchFlight = catchAsync(async (req, res, next) => {
 
     const flight = await flightServices.findOne(id);
 
-    if (!flight) return next(new AppError(`city with id ${id} not found`, 404));
+    if (!flight)
+        return next(new AppError(`Flight with id ${id} not found`, 404));
 
     const flightUpdate = await flightServices.update(flight, data);
 
@@ -65,9 +68,20 @@ const deleteFlight = catchAsync(async (req, res, next) => {
 
     const flight = await flightServices.findOne(id, "pending");
 
-    // TODO => si el vuelo tiene tiquetes vendidos no se puede eliminar
+    if (!flight)
+        return next(new AppError(`Flight with id ${id} not found`, 404));
 
-    if (!flight) return next(new AppError(`city with id ${id} not found`, 404));
+    const hasTicketSell = await ticketServices.findOneTicketByFlightId(
+        flight.id
+    );
+
+    if (hasTicketSell)
+        return next(
+            new AppError(
+                `a flight canot be deleted if tickets have been for it`,
+                400
+            )
+        );
 
     await flightServices.delete(flight);
 
