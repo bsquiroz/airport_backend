@@ -82,12 +82,16 @@ const approveFlight = catchAsync(async (req, res, next) => {
     if (!flight)
         return next(new AppError(`Flight with id ${id} not found`, 404));
 
-    const originCity = await cityServices.findOne(flight.origin_id);
+    const originCityPromise = cityServices.findOne(flight.origin_id);
+    const destinationCityPromise = cityServices.findOne(flight.destination_id);
+
+    const [originCity, destinationCity] = await Promise.all([
+        originCityPromise,
+        destinationCityPromise,
+    ]);
 
     if (!originCity)
         return next(new AppError("City of origin does not exist", 404));
-
-    const destinationCity = await cityServices.findOne(flight.destination_id);
 
     if (!destinationCity)
         return next(new AppError("City of destination does not exist", 404));
