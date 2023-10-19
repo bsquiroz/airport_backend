@@ -25,13 +25,13 @@ const getPassenger = catchAsync(async (req, res, next) => {
 const postPassenger = catchAsync(async (req, res, next) => {
     const { data, errorMessages, hasError } = validatePassenger(req.body);
 
-    if (hasError) {
+    if (hasError)
         return res.status(422).json({
             status: "error",
             message: errorMessages,
         });
-    }
 
+    data["createdBy"] = req.sessionUser.id;
     const passenger = await passengerService.create(data);
 
     return res.status(201).json(passenger);
