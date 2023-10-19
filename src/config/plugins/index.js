@@ -5,6 +5,9 @@ const { generateJWT, verifyToken } = require("./jwt.plugin.js");
 const { limitRequest } = require("./rate-limit.plugin.js");
 const { securityHeader } = require("./helmet.js");
 const { httpClient } = require("./http-client.plugin.js");
+const { uploadFields, uploadField } = require("./upload-fields.plugin.js");
+const { utilsfirebase } = require("./store-files.js");
+const { generateUUID } = require("./uuid.plugin.js");
 
 module.exports = {
     enableCors,
@@ -16,4 +19,8 @@ module.exports = {
     limitRequest,
     securityHeader,
     httpClient,
+    uploadFields,
+    uploadField,
+    utilsfirebase,
+    generateUUID,
 };

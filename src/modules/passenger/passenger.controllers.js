@@ -1,3 +1,7 @@
+const {
+    UploadFilesService,
+} = require("../../common/services/upload-file-cloud.js");
+const { generateUUID } = require("../../config/plugins/uuid.plugin.js");
 const { catchAsync, AppError } = require("../../erros/index.js");
 const {
     validatePassenger,
@@ -24,16 +28,24 @@ const getPassenger = catchAsync(async (req, res, next) => {
 
 const postPassenger = catchAsync(async (req, res, next) => {
     const { data, errorMessages, hasError } = validatePassenger(req.body);
-
     if (hasError)
         return res.status(422).json({
             status: "error",
             message: errorMessages,
         });
 
-    data["createdBy"] = req.sessionUser.id;
-    const passenger = await passengerService.create(data);
+    if (req.file) {
+        const path = `passenger/${generateUUID()}-${req.file.originalname}`;
+        const photoURL = await UploadFilesService.uploadToFirebase(
+            path,
+            req.file.buffer
+        );
+        data["photo"] = photoURL;
+    }
 
+    data["createdBy"] = req.sessionUser.id;
+
+    const passenger = await passengerService.create(data);
     return res.status(201).json(passenger);
 });
 
