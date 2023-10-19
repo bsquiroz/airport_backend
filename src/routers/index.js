@@ -13,12 +13,12 @@ const { bookingRouter } = require("../modules/booking/booking.router.js");
 const routers = Router();
 
 routers.use("/users", authRouter);
+routers.use("/flights", flightRouter);
 
 routers.use(protect);
 routers.use("/passengers", passengerRouter);
 routers.use("/city", cityRouter);
 routers.use("/planes", planeRouter);
-routers.use("/flights", flightRouter);
 routers.use("/tickets", ticketRouter);
 routers.use("/bookings", bookingRouter);
 

@@ -11,7 +11,11 @@ const { envs } = require("./config/enviroments");
 
 const app = express();
 
-const ACCEPTED_ORIGINS = ["http://localhost:3000", "http://localhost:4200"];
+const ACCEPTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:4200",
+    "http://localhost:5173",
+];
 
 app.use(express.json());
 
