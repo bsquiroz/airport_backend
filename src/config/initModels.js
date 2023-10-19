@@ -7,41 +7,83 @@ const { Plane } = require("../modules/plane/plane.model");
 const { Ticket } = require("../modules/ticket/ticket.model");
 
 function initModels() {
-    User.hasMany(Passenger, { foreignKey: "created_by" });
-    Passenger.belongsTo(User, { foreignKey: "created_by" });
+    User.hasMany(Passenger, {
+        foreignKey: "created_by",
+        as: "userToPassenger",
+    });
+    Passenger.belongsTo(User, {
+        foreignKey: "created_by",
+        as: "passengerToUser",
+    });
 
-    Passenger.hasMany(Booking, { foreignKey: "passenger_id" });
-    Booking.belongsTo(Passenger, { foreignKey: "passenger_id" });
+    Passenger.hasMany(Booking, {
+        foreignKey: "passenger_id",
+        as: "passengerToBooking",
+    });
+    Booking.belongsTo(Passenger, {
+        foreignKey: "passenger_id",
+        as: "bookingToPassenger",
+    });
 
-    User.hasMany(Booking, { foreignKey: "created_by" });
-    Booking.belongsTo(User, { foreignKey: "created_by" });
+    User.hasMany(Booking, { foreignKey: "created_by", as: "userToBooking" });
+    Booking.belongsTo(User, { foreignKey: "created_by", as: "bookingToUser" });
 
-    Flights.hasMany(Booking, { foreignKey: "flight_id" });
-    Booking.belongsTo(Flights, { foreignKey: "flight_id" });
+    Flights.hasMany(Booking, {
+        foreignKey: "flight_id",
+        as: "flightToBooking",
+    });
+    Booking.belongsTo(Flights, {
+        foreignKey: "flight_id",
+        as: "bookingToFlight",
+    });
 
-    Booking.hasMany(Ticket, { foreignKey: "booking_id" });
-    Ticket.belongsTo(Booking, { foreignKey: "booking_id" });
+    Booking.hasMany(Ticket, {
+        foreignKey: "booking_id",
+        as: "bookingToTicket",
+    });
+    Ticket.belongsTo(Booking, {
+        foreignKey: "booking_id",
+        as: "ticketToBooking",
+    });
 
-    User.hasMany(Ticket, { foreignKey: "created_by" });
-    Ticket.belongsTo(User, { foreignKey: "created_by" });
+    User.hasMany(Ticket, { foreignKey: "created_by", as: "userToTicket" });
+    Ticket.belongsTo(User, { foreignKey: "created_by", as: "ticketToUser" });
 
-    Passenger.hasMany(Ticket, { foreignKey: "passenger_id" });
-    Ticket.belongsTo(Passenger, { foreignKey: "passenger_id" });
+    Passenger.hasMany(Ticket, {
+        foreignKey: "passenger_id",
+        as: "passengerToTicket",
+    });
+    Ticket.belongsTo(Passenger, {
+        foreignKey: "passenger_id",
+        as: "ticketToPassenger",
+    });
 
-    Flights.hasMany(Ticket, { foreignKey: "flight_id" });
-    Ticket.belongsTo(Flights, { foreignKey: "flight_id" });
+    Flights.hasMany(Ticket, { foreignKey: "flight_id", as: "flightToTicket" });
+    Ticket.belongsTo(Flights, {
+        foreignKey: "flight_id",
+        as: "ticketToFlight",
+    });
 
-    Plane.hasMany(Flights, { foreignKey: "plane_id" });
-    Flights.belongsTo(Plane, { foreignKey: "plane_id" });
+    Plane.hasMany(Flights, { foreignKey: "plane_id", as: "planeToFlight" });
+    Flights.belongsTo(Plane, { foreignKey: "plane_id", as: "flightToPlane" });
 
-    City.hasMany(Flights, { foreignKey: "origin_id", as: "cityHasOrigin" });
-    Flights.belongsTo(City, { foreignKey: "origin_id" });
+    City.hasMany(Flights, {
+        foreignKey: "origin_id",
+        as: "cityOriginToFlight",
+    });
+    Flights.belongsTo(City, {
+        foreignKey: "origin_id",
+        as: "flightToCityOrigin",
+    });
 
     City.hasMany(Flights, {
         foreignKey: "destination_id",
-        as: "cityHasDestination",
+        as: "cityDestinationToFlight",
     });
-    Flights.belongsTo(City, { foreignKey: "destination_id" });
+    Flights.belongsTo(City, {
+        foreignKey: "destination_id",
+        as: "flightToCityDestination",
+    });
 }
 
 module.exports = {

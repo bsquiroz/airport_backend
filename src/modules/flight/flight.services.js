@@ -1,4 +1,6 @@
+const { City } = require("../city/city.model.js");
 const { Flights } = require("./flight.model.js");
+
 const { Op } = require("sequelize");
 
 class FlightServices {
@@ -9,6 +11,18 @@ class FlightServices {
                     [Op.notIn]: ["cancelled", "done"],
                 },
             },
+            include: [
+                {
+                    model: City,
+                    as: "flightToCityOrigin",
+                    attributes: ["name", "country"],
+                },
+                {
+                    model: City,
+                    as: "flightToCityDestination",
+                    attributes: ["name", "country"],
+                },
+            ],
         });
     }
 
